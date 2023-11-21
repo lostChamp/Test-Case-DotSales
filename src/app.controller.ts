@@ -9,10 +9,10 @@ export class AppController {
 
   @Get("")
   @ApiOperation({ summary: 'Creation integration and receipt of access token' })
-  async getAccessToken(@Req() req: Request) {
-    const code = String(req["query"]["code"]);
+  async getAccessToken(@Req() request: Request) {
+    const code = String(request["query"]["code"]);
     const accessToken = await this.appService.getAccessToken(code);
-    console.log(accessToken)
+    console.log(accessToken);
   }
 
   @Get("/newAccess")
@@ -29,7 +29,7 @@ export class AppController {
       @Param("email") clientEmail: string,
       @Param("phone") clientPhone: string
   ) {
-    const res = await this.appService.checkContactsAndCreateDeal(clientEmail, clientPhone, clientName);
+    await this.appService.checkContactsAndCreateDeal(clientEmail, clientPhone, clientName);
   }
 
 

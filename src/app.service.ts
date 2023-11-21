@@ -10,12 +10,12 @@ export class AppService {
         const token = process.env.ACCESS_TOKEN;
         const resByEmail = await axios.get(routeByEmail, {
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${token}`,
             }
         });
          const resByPhone = await axios.get(routeByPhone, {
              headers: {
-                 Authorization: `Bearer ${token}`
+                 Authorization: `Bearer ${token}`,
              }
          });
          let clientId;
@@ -25,10 +25,9 @@ export class AppService {
          if(resByPhone.data !== '') {
              clientId = resByPhone["data"]["_embedded"]["contacts"][0]["id"];
          }
-
          if(resByEmail.data === '' && resByPhone.data === '') {
-             const res = await this.createUser(clientPhone, clientEmail, clientName);
-             const clientId = res["data"]["_embedded"]["contacts"][0]["id"];
+             const resCreateUser = await this.createUser(clientPhone, clientEmail, clientName);
+             const clientId = resCreateUser["data"]["_embedded"]["contacts"][0]["id"];
              const resFromCreateDeal = await this.createDeal(clientId);
              return resFromCreateDeal;
          }
@@ -41,7 +40,7 @@ export class AppService {
     async createDeal(clientId: number) {
          const route = process.env.ADMIN_URI + `/api/v4/leads`;
          const token = process.env.ACCESS_TOKEN;
-         const res = await axios.post(route, [
+         const resDeal = await axios.post(route, [
              {
                  name: "Test deal",
                  _embedded: {
@@ -54,20 +53,20 @@ export class AppService {
              }
          ], {
              headers: {
-                 Authorization: `Bearer ${token}`
+                 Authorization: `Bearer ${token}`,
              }
          });
 
-         return res;
+         return resDeal;
     }
 
     async updateUserData(idContact: number, clientEmail: string, clientName: string, clientPhone: string) {
         const route = process.env.ADMIN_URI + `api/v4/contacts/${idContact}`;
         const token = process.env.ACCESS_TOKEN;
-        const arrayName = /(?=[А-ЯЁ])/g[Symbol.split](clientName);
+        const arrayName = clientName.match(/[A-Z][a-z]+/g);;
         const firstName = arrayName[0];
         const lastName = arrayName[1];
-        const res = await axios.patch(route, {
+        const resUpdate = await axios.patch(route, {
                 id: idContact,
                 first_name: firstName,
                 last_name: lastName,
@@ -98,7 +97,7 @@ export class AppService {
                 Authorization: `Bearer ${token}`
             }
         });
-        return res;
+        return resUpdate;
     }
 
     async createUser(clientPhone: string, clientEmail: string, clientName: string) {
@@ -107,13 +106,13 @@ export class AppService {
         const arrayName = clientName.match(/[A-Z][a-z]+/g);
         const firstName = arrayName[0];
         const lastName = arrayName[1];
-        const res = await axios.post(route, [
+        const resCreate = await axios.post(route, [
             {
                 first_name: firstName,
                 last_name: lastName,
                 custom_fields_values: [
                     {
-                        field_id: 1445249,
+                        field_id: 1452061,
                         values: [
                             {
                                 value: clientPhone
@@ -121,7 +120,7 @@ export class AppService {
                         ]
                     },
                     {
-                        field_id: 1445251,
+                        field_id: 1452063,
                         values: [
                             {
                                 value: clientEmail
@@ -135,7 +134,7 @@ export class AppService {
                 Authorization: `Bearer ${token}`
             }
         });
-        return res;
+        return resCreate;
     }
 
     async getAccessToken(authorizationCode: string) {
@@ -143,15 +142,15 @@ export class AppService {
             baseURL: process.env.ADMIN_URI_FOR_AUTH
         });
         const route = "access_token?=" + process.env.SESSION_KEY;
-        const res = await axiosInstance.post(route, {
+        const resAccessToken = await axiosInstance.post(route, {
             client_id: process.env.ID_INTEGRATION,
             client_secret: process.env.SECRET_KEY,
             grant_type: "authorization_code",
             code: authorizationCode,
             redirect_uri: process.env.REDIRECT_URI
-        })
+        });
 
-        return res.data;
+        return resAccessToken.data;
     }
 
     async getNewAccessTokenByRefresh() {
@@ -159,14 +158,14 @@ export class AppService {
             baseURL: process.env.ADMIN_URI_FOR_AUTH
         });
         const route = "access_token?=" + process.env.SESSION_KEY;
-        const res = await axiosInstance.post(route, {
+        const resAccessTokenByRefresh = await axiosInstance.post(route, {
             client_id: process.env.ID_INTEGRATION,
             client_secret: process.env.SECRET_KEY,
             grant_type: "refresh_token",
             refresh_token: process.env.REFRESH_TOKEN,
             redirect_uri: process.env.REDIRECT_URI
-        })
+        });
 
-        return res.data;
+        return resAccessTokenByRefresh.data;
     }
 }

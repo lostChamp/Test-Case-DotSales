@@ -11,7 +11,7 @@
 
 ## Доступ к аккаунту amoCRM
 
-#### Почта: kostya.kondyurin@mail.com
+#### Почта: kostya.kondyurin@mail.ru
 #### Пароль: test123
 
 
@@ -54,7 +54,7 @@ http://localhost:8080/api
 
 ## Access to amoCRM account
 
-#### Mail: kostya.kondyurin@mail.com
+#### Mail: kostya.kondyurin@mail.ru
 #### Password: test123
 
 ## How to launch a project locally?
